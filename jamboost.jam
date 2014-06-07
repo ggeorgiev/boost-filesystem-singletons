@@ -80,7 +80,7 @@ rule boostDefines ( )
       :
       :
       :
-        <include>$(ROOT)/boost/include
+        <include>$(ROOT)/boost-install/include
 
         # disables auto link option - it is pointless anyway because does not work on all
         # compilers we support

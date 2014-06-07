@@ -15,4 +15,5 @@ exe test
 
     boost_templates
     prebuilt_boost_filesystem
+    prebuilt_boost_thread
   ;
