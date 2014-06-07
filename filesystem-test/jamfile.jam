@@ -1,0 +1,18 @@
+path-constant TOP : ../.. ;
+path-constant ROOT : $(TOP)/.. ;
+path-constant INTERMEDIATE : $(ROOT)/intermediate ;
+
+project
+  : usage-requirements
+    <include>$(TOP)
+  ;
+
+boostDefines ;
+
+exe test
+  :
+    main.cpp
+
+    boost_templates
+    prebuilt_boost_filesystem
+  ;

@@ -1,0 +1,151 @@
+import os ;
+
+rule boost_library_location ( properties * )
+{
+    return <search>$(ROOT)/boost-install/lib ;
+}
+
+rule boostDefines ( )
+{
+    alias prebuilt_boost-variant
+      :
+      :
+        <variant>debug
+      :
+      :
+        <define>BOOST_ENABLE_ASSERT_HANDLER
+      ;
+
+    alias prebuilt_boost-variant
+      :
+      :
+        <variant>release
+      :
+      :
+        <define>BOOST_DISABLE_ASSERTS
+      ;
+
+    alias prebuilt_boost-os_addressmodel ;
+
+    alias prebuilt_boost-os_addressmodel 
+      :
+      :
+        <os>NT
+        <address-model>64
+      :
+      :
+        <define>WIN64
+      ;
+
+    alias prebuilt_boost-os
+      :
+        prebuilt_boost-os_addressmodel
+      ;
+
+    alias prebuilt_boost-os
+      :
+      :
+        <os>NT
+      :
+      :
+        <define>_WIN32_WINNT=0x0501
+      ;
+
+    alias prebuilt_boost-toolset ;
+
+    alias prebuilt_boost-toolset
+      :
+      :
+        <toolset>darwin
+      :
+      :
+        <cxxflags>-fvisibility-inlines-hidden
+        <cflags>-mmacosx-version-min=10.5
+        <linkflags>-mmacosx-version-min=10.5
+      ;
+
+    # this is workaround of the fact that on windows bjam do not prefix
+    # the static libraries with lib prefix, but generates them with it
+    local prefix ;
+    if [ os.name ] = NT
+    {
+        prefix = lib ;
+    }
+
+    alias boost_templates
+      :
+        prebuilt_boost-variant
+        prebuilt_boost-os
+        prebuilt_boost-toolset
+      :
+      :
+      :
+        <include>$(ROOT)/boost/include
+
+        # disables auto link option - it is pointless anyway because does not work on all
+        # compilers we support
+        <define>BOOST_ALL_NO_LIB=1
+      ;
+
+    alias prebuilt_boost_requirements_for_all
+      :
+        boost_templates
+      ;
+
+    lib prebuilt_boost_atomic
+      :
+        prebuilt_boost_requirements_for_all
+      :
+        <name>$(prefix:E)boost_atomic
+        <conditional>@boost_library_location
+      ;
+
+    lib prebuilt_boost_date_time
+      :
+        prebuilt_boost_requirements_for_all
+      :
+        <name>$(prefix:E)boost_date_time
+        <conditional>@boost_library_location
+      ;
+
+    lib prebuilt_boost_thread
+      :
+        prebuilt_boost_requirements_for_all
+      :
+        <name>$(prefix:E)boost_thread
+        <conditional>@boost_library_location
+      ;
+
+    lib prebuilt_boost_system
+      :
+        prebuilt_boost_requirements_for_all
+      :
+        <name>$(prefix:E)boost_system
+        <conditional>@boost_library_location
+      ;
+
+    lib prebuilt_boost_filesystem
+      :
+        prebuilt_boost_requirements_for_all
+        prebuilt_boost_system
+      :
+        <name>$(prefix:E)boost_filesystem
+        <conditional>@boost_library_location
+      ;
+
+    lib prebuilt_boost_program_options
+      :
+        prebuilt_boost_requirements_for_all
+      :
+        <name>$(prefix:E)boost_program_options
+        <conditional>@boost_library_location
+      ;
+
+    lib prebuilt_boost_regex
+      :
+        prebuilt_boost_requirements_for_all
+      :
+        <name>$(prefix:E)boost_regex
+        <conditional>@boost_library_location
+      ;
+}

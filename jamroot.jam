@@ -1,0 +1,25 @@
+path-constant TOP : . ;
+path-constant ROOT : $(TOP)/.. ;
+path-constant INTERMEDIATE : $(ROOT)/intermediate ;
+
+import os ;
+
+include $(TOP)/jamboost.jam ;
+
+project boost-filesystem
+  :
+  :
+    default-build <variant>debug <address-model>64 <link>static <threading>multi
+                  #<warnings>all
+  :
+    requirements <toolset>gcc:<cflags>-fdata-sections <toolset>gcc:<cflags>-ffunction-sections <toolset>gcc:<linkflags>-Wl,--gc-sections
+                 <toolset>darwin:<cflags>-fdata-sections <toolset>darwin:<cflags>-ffunction-sections
+
+                 <variant>debug:<define>_DEBUG
+                 <variant>release:<define>NDEBUG
+  :
+    build-dir $(INTERMEDIATE)
+  ;
+
+
+build-project $(TOP)/filesystem-test ;
